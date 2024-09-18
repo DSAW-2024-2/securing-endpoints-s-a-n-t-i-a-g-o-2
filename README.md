@@ -29,7 +29,7 @@ Crear endpoints seguros en el backend utilizando una capa de seguridad basada en
 #### Login:
    - Exponer un endpoint para iniciar sesión con correo y contraseña.
    - Devolver una cookie de sesión al usuario después de iniciar sesión correctamente.
-   - `POST /users`: Permite crear un nuevo usuario enviando un objeto JSON con los datos de este.
+   - `POST /login`: Permite crear un nuevo usuario enviando un objeto JSON con los datos de este.
 
 Debes crear las siguientes rutas utilizando `express.Router()`:
 
