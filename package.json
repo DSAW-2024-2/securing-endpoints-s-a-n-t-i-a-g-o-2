@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "express": "^4.21.0",
+    "node": "^22.9.0",
+    "vercel": "^37.5.4"
+  }
+}
