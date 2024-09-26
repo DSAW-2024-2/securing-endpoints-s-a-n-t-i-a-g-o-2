@@ -1,9 +1,10 @@
+// auth.js
 require('dotenv').config();
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// Datos de autorización del administrador (esto solo para ejemplo, en producción se debería usar una base de datos)
+// Datos de autorización del administrador (esto solo para ejemplo)
 const adminAuthorization = [
     {
         email: 'admin@admin.com',
@@ -11,8 +12,8 @@ const adminAuthorization = [
     }
 ];
 
-// Ruta para el login
-router.post('/login', (req, res) => {
+// Ruta para el login (ajusta la ruta a '/')
+router.post('/', (req, res) => {
     const { email, password } = req.body;
 
     // Busca el usuario por email y password
@@ -54,4 +55,3 @@ function authToken(req, res, next) {
 // Exporta el router y el middleware de autenticación
 module.exports = router;
 module.exports.authToken = authToken;
-
