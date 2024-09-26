@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 let users = require('../data/users');
+const { authToken } = require('../login/auth'); // Importar la función authToken
 
 // Función para validar que el nombre solo tenga letras y espacios
 const validateName = (name) => /^[A-Za-z\s]+$/.test(name);
@@ -9,15 +10,12 @@ const validateName = (name) => /^[A-Za-z\s]+$/.test(name);
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 // Obtener todos los usuarios
-router.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Usuarios obtenidos correctamente',
-    data: users,
-  });
+router.get('/', authToken, (req, res) => {
+  res.json(users);
 });
 
 // Crear un nuevo usuario
-router.post('/', (req, res) => {
+router.post('/', authToken, (req, res) => {
   let { id, name, email, age } = req.body;
 
   // Verificar que todos los campos están presentes
@@ -40,33 +38,21 @@ router.post('/', (req, res) => {
     return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@).' });
   }
 
-  // Verificar si el ID o Email ya existen
-  const existingUser = users.find(u => u.id === id || u.email === email);
-  if (existingUser) {
-    return res.status(409).json({ message: 'El ID o el Email ya están en uso' });
-  }
-
   // Crear el nuevo usuario
   const newUser = { id, name, email, age };
   users.push(newUser);
-  res.status(201).json({
-    message: 'Usuario creado correctamente',
-    data: newUser,
-  });
+  res.status(201).json(newUser);
 });
 
 // Obtener un usuario por ID
-router.get('/:id', (req, res) => {
+router.get('/:id', authToken, (req, res) => {
   const user = users.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
-  res.status(200).json({
-    message: 'Usuario obtenido correctamente',
-    data: user,
-  });
+  res.json(user);
 });
 
 // Actualizar un usuario por ID
-router.put('/:id', (req, res) => {
+router.put('/:id', authToken, (req, res) => {
   let { name, email, age } = req.body;
   const user = users.find(u => u.id === req.params.id);
 
@@ -83,29 +69,21 @@ router.put('/:id', (req, res) => {
     return res.status(400).json({ message: 'La edad debe ser un string' });
   }
 
-  // Verificar si el nuevo email ya está en uso por otro usuario
-  if (email && users.some(u => u.email === email && u.id !== req.params.id)) {
-    return res.status(409).json({ message: 'El Email ya está en uso por otro usuario' });
-  }
-
   // Actualizar los campos del usuario
   if (name) user.name = name;
   if (email) user.email = email;
   if (age) user.age = age;
 
-  res.status(200).json({
-    message: 'Usuario actualizado correctamente',
-    data: user,
-  });
+  res.json(user);
 });
 
 // Eliminar un usuario por ID
-router.delete('/:id', (req, res) => {
+router.delete('/:id', authToken, (req, res) => {
   const index = users.findIndex(u => u.id === req.params.id);
   if (index === -1) return res.status(404).json({ message: 'Usuario no encontrado' });
 
   users.splice(index, 1);
-  res.status(200).json({ message: 'Usuario eliminado correctamente' });
+  res.status(200).json({ message: 'Usuario eliminado correctamente!!!' });
 });
 
 module.exports = router;
