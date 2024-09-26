@@ -1,3 +1,4 @@
+// auth.js
 require('dotenv').config();
 const express = require('express');
 const app = express();  
@@ -35,5 +36,5 @@ function authToken(req, res, next) {
         next();
     });
 }
-
-module.exports = app;
+// Exportar la función authToken
+module.exports = { app, authToken }; // Asegúrate de incluir authToken

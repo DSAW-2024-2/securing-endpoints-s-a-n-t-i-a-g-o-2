@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 let users = require('../data/users');
-const { authToken } = require('../login/auth')  // Importar la función authToken
+const { authToken } = require('../login/auth');// Importar la función authToken
 
 // Obtener todos los usuarios 
 router.get('/', authToken,(req, res) => {
