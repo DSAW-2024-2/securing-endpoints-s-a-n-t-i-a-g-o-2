@@ -3,8 +3,8 @@ const app = express();
 const usersRoutes = require('./routes/users');
 const productsRoutes = require('./routes/products');
 const ordersRoutes = require('./routes/orders');
-const { authToken } = require('./login/auth'); // Importar la función authToken
-const { loginRoutes } = require('./login/auth');
+const loginRoutes = require('./login/auth'); // Importar las rutas de login
+const { authToken } = require('./login/auth'); // Importar authToken por separado
 
 app.use(express.json());
 
