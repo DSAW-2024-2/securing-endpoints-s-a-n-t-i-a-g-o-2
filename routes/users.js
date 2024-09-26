@@ -1,37 +1,41 @@
 const express = require('express');
 const router = express.Router();
 let users = require('../data/users');
-const { authToken } = require('../login/auth');// Importar la función authToken
+const { authToken } = require('../login/auth'); // Importar la función authToken
 
-// Obtener todos los usuarios 
-router.get('/', authToken,(req, res) => {
+// Función para validar que el nombre solo tenga letras y espacios
+const validateName = (name) => /^[A-Za-z\s]+$/.test(name);
+
+// Función para validar el formato de email
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Obtener todos los usuarios
+router.get('/', authToken, (req, res) => {
   res.json(users);
 });
 
-// Crear un nuevo usuario 
+// Crear un nuevo usuario
 router.post('/', authToken, (req, res) => {
   let { id, name, email, age } = req.body;
-
-  // Verificar que todos los campos son strings excepto age que debe ser numérico
-  if (typeof id !== 'string' || typeof name !== 'string' || typeof email !== 'string' || typeof age !== 'string') {
-    return res.status(400).json({ message: 'Verifique que los campos id, name, email y age sean strings' });
-  }
-
-  // Verificar que el nombre no contenga números
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (!nameRegex.test(name)) {
-    return res.status(400).json({ message: 'El nombre solo puede contener letras y espacios' });
-  }
-
-  // Verificar que el email tenga un formato válido y contenga arroba
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@).' });
-  }
 
   // Verificar que todos los campos están presentes
   if (!id || !name || !email || age === undefined) {
     return res.status(400).json({ message: 'Todos los campos son requeridos: id, name, email, age' });
+  }
+
+  // Verificar que todos los campos son strings
+  if (typeof id !== 'string' || typeof name !== 'string' || typeof email !== 'string' || typeof age !== 'string') {
+    return res.status(400).json({ message: 'Todos los campos deben ser strings' });
+  }
+
+  // Validar el nombre
+  if (!validateName(name)) {
+    return res.status(400).json({ message: 'El nombre solo puede contener letras y espacios' });
+  }
+
+  // Validar el email
+  if (!validateEmail(email)) {
+    return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@).' });
   }
 
   // Crear el nuevo usuario
@@ -40,41 +44,29 @@ router.post('/', authToken, (req, res) => {
   res.status(201).json(newUser);
 });
 
-// Obtener un usuario por ID 
-router.get('/:id', authToken,(req, res) => {
+// Obtener un usuario por ID
+router.get('/:id', authToken, (req, res) => {
   const user = users.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
   res.json(user);
 });
 
-// Actualizar un usuario por ID 
+// Actualizar un usuario por ID
 router.put('/:id', authToken, (req, res) => {
   let { name, email, age } = req.body;
   const user = users.find(u => u.id === req.params.id);
 
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-  // Verificar que los campos sean del tipo correcto si se envían
-  if (name && typeof name !== 'string') {
-    return res.status(400).json({ message: 'El nombre debe ser un string' });
+  // Verificar y validar los campos si se envían
+  if (name && (typeof name !== 'string' || !validateName(name))) {
+    return res.status(400).json({ message: 'El nombre debe ser un string y solo puede contener letras y espacios' });
   }
-  if (email && typeof email !== 'string') {
-    return res.status(400).json({ message: 'El email debe ser un string' });
+  if (email && (typeof email !== 'string' || !validateEmail(email))) {
+    return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@) y un dominio válido.' });
   }
   if (age && typeof age !== 'string') {
     return res.status(400).json({ message: 'La edad debe ser un string' });
-  }
-
-  // Verificar que el nombre no contenga números si se actualiza
-  const nameRegex = /^[A-Za-z\s]+$/;
-  if (name && !nameRegex.test(name)) {
-    return res.status(400).json({ message: 'El nombre solo puede contener letras y espacios' });
-  }
-
-  // Verificar que el email tenga un formato válido y contenga arroba si se actualiza
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email && !emailRegex.test(email)) {
-    return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@) y un dominio válido.' });
   }
 
   // Actualizar los campos del usuario
@@ -85,7 +77,7 @@ router.put('/:id', authToken, (req, res) => {
   res.json(user);
 });
 
-// Eliminar un usuario por ID 
+// Eliminar un usuario por ID
 router.delete('/:id', authToken, (req, res) => {
   const index = users.findIndex(u => u.id === req.params.id);
   if (index === -1) return res.status(404).json({ message: 'Usuario no encontrado' });

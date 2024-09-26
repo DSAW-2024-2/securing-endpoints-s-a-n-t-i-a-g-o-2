@@ -3,20 +3,19 @@ const app = express();
 const usersRoutes = require('./routes/users');
 const productsRoutes = require('./routes/products');
 const ordersRoutes = require('./routes/orders');
-const { router: loginRoute, authToken} = require('./login/auth'); 
+const { router: loginRoute, authToken } = require('./login/auth'); 
 
 app.use(express.json());
 
+// Ruta para el login, sin protección (no requiere token JWT)
 app.use('/login', loginRoute);
 
-app.use(authToken);
+// Protege las siguientes rutas con el middleware de autenticación JWT
+app.use('/users', authToken, usersRoutes);        // Rutas de usuarios
+app.use('/products', authToken, productsRoutes);  // Rutas de productos
+app.use('/orders', authToken, ordersRoutes);      // Rutas de pedidos
 
-app.use('/users', usersRoutes);        // Rutas de usuarios
-app.use('/products', productsRoutes);  // Rutas de productos
-app.use('/orders', ordersRoutes);      // Rutas de pedidos
-
-
-// Ruta principal
+// Ruta principal, accesible sin autenticación
 app.get('/', (req, res) => {
   res.send('Bienvenido!!');
 });
