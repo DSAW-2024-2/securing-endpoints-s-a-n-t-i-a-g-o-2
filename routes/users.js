@@ -10,12 +10,12 @@ const validateName = (name) => /^[A-Za-z\s]+$/.test(name);
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 // Obtener todos los usuarios
-router.get('/', authToken, (req, res) => {
+router.get('/', (req, res) => {
   res.json(users);
 });
 
 // Crear un nuevo usuario
-router.post('/', authToken, (req, res) => {
+router.post('/', (req, res) => {
   let { id, name, email, age } = req.body;
 
   // Verificar que todos los campos están presentes
@@ -45,14 +45,14 @@ router.post('/', authToken, (req, res) => {
 });
 
 // Obtener un usuario por ID
-router.get('/:id', authToken, (req, res) => {
+router.get('/:id', (req, res) => {
   const user = users.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
   res.json(user);
 });
 
 // Actualizar un usuario por ID
-router.put('/:id', authToken, (req, res) => {
+router.put('/:id', (req, res) => {
   let { name, email, age } = req.body;
   const user = users.find(u => u.id === req.params.id);
 
@@ -78,7 +78,7 @@ router.put('/:id', authToken, (req, res) => {
 });
 
 // Eliminar un usuario por ID
-router.delete('/:id', authToken, (req, res) => {
+router.delete('/:id', (req, res) => {
   const index = users.findIndex(u => u.id === req.params.id);
   if (index === -1) return res.status(404).json({ message: 'Usuario no encontrado' });
 
