@@ -7,6 +7,8 @@ const { authToken } = require('../login/auth')  // Importar la función authToke
 
 app.use(express.json());
 
+app.use(authToken);
+
 app.use('/users', usersRoutes);        // Rutas de usuarios
 app.use('/products', productsRoutes);  // Rutas de productos
 app.use('/orders', ordersRoutes);      // Rutas de pedidos
