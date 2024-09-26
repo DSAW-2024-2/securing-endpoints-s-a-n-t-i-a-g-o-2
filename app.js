@@ -8,6 +8,7 @@ const { authToken } = require('./login/auth'); // Importar authToken por separad
 
 app.use(express.json());
 
+
 // Ruta para el login, sin protección (no requiere token JWT)
 app.use('/login', loginRoutes);
 
