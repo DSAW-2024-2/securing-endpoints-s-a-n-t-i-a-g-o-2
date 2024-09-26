@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 let products = require('../data/products');
+const { authToken } = require('../login/auth')  // Importar la función authToken
 
-// Obtener todos los productos
-router.get('/', (req, res) => {
+// Obtener todos los productos 
+router.get('/', authToken,(req, res) => {
   res.json(products);
 });
 
-// Traer un producto por ID
-router.get('/:id', (req,res) => {
-  const product=products.find(p=> p.id === req.params.id);
-  if(!product){
-    return res.status(404).json({message: 'Producto no encontrado'});
+// Traer un producto por ID 
+router.get('/:id', authToken,(req, res) => {
+  const product = products.find(p => p.id === req.params.id);
+  if (!product) {
+    return res.status(404).json({ message: 'Producto no encontrado' });
   }
   res.json(product);
-})
+});
 
-
-// Crear un nuevo producto
-router.post('/', (req, res) => {
+// Crear un nuevo producto (requiere token JWT válido)
+router.post('/', authToken, (req, res) => {
   let { id, name, price, category } = req.body;
 
   // Verificar que todos los campos son strings
@@ -49,9 +49,8 @@ router.post('/', (req, res) => {
   res.status(201).json(newProduct);
 });
 
-
-// Actualizar un producto por ID
-router.put('/:id', (req, res) => {
+// Actualizar un producto por ID (requiere token JWT válido)
+router.put('/:id', authToken, (req, res) => {
   let { id, name, price, category } = req.body;
 
   if (!id || !name || !price || !category) {
@@ -72,8 +71,8 @@ router.put('/:id', (req, res) => {
   res.json(product);
 });
 
-// Eliminar un producto por ID
-router.delete('/:id', (req, res) => {
+// Eliminar un producto por ID (requiere token JWT válido)
+router.delete('/:id', authToken, (req, res) => {
   const index = products.findIndex(p => p.id === req.params.id);
   if (index === -1) return res.status(404).json({ message: 'Producto no encontrado' });
 
@@ -82,4 +81,3 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
-

@@ -3,21 +3,22 @@ const router = express.Router();
 let orders = require('../data/orders');
 let users = require('../data/users');
 let products = require('../data/products');
+const { authToken } = require('../login/auth')  // Importar la función authToken
 
-// Obtener todos los pedidos
-router.get('/', (req, res) => {
+// Obtener todos los pedidos (requiere token JWT válido)
+router.get('/', authToken, (req, res) => {
   res.json(orders);
 });
 
-// Obtener pedido por ID
-router.get('/:id', (req, res) => {
+// Obtener pedido por ID (requiere token JWT válido)
+router.get('/:id', authToken, (req, res) => {
   const order = orders.find(o => o.id === req.params.id);
   if (!order) return res.status(404).json({ message: 'Pedido no encontrado' });
   res.json(order);
 });
 
-// Crear un nuevo pedido
-router.post('/', (req, res) => {
+// Crear un nuevo pedido (requiere token JWT válido)
+router.post('/', authToken, (req, res) => {
   const { id, userId, productId, quantity, status } = req.body;
 
   // Verificar que todos los campos estén presentes

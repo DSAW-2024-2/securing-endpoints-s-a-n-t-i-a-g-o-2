@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 let users = require('../data/users');
+const { authToken } = require('../login/auth')  // Importar la función authToken
 
-// Obtener todos los usuarios
-router.get('/', (req, res) => {
+// Obtener todos los usuarios 
+router.get('/', authToken,(req, res) => {
   res.json(users);
 });
 
-// Crear un nuevo usuario
-router.post('/', (req, res) => {
+// Crear un nuevo usuario 
+router.post('/', authToken, (req, res) => {
   let { id, name, email, age } = req.body;
 
   // Verificar que todos los campos son strings excepto age que debe ser numérico
@@ -39,15 +40,15 @@ router.post('/', (req, res) => {
   res.status(201).json(newUser);
 });
 
-// Obtener un usuario por ID
-router.get('/:id', (req, res) => {
+// Obtener un usuario por ID 
+router.get('/:id', authToken,(req, res) => {
   const user = users.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
   res.json(user);
 });
 
-// Actualizar un usuario por ID
-router.put('/:id', (req, res) => {
+// Actualizar un usuario por ID 
+router.put('/:id', authToken, (req, res) => {
   let { name, email, age } = req.body;
   const user = users.find(u => u.id === req.params.id);
 
@@ -70,16 +71,10 @@ router.put('/:id', (req, res) => {
     return res.status(400).json({ message: 'El nombre solo puede contener letras y espacios' });
   }
 
-    // Expresión regular para validar el formato de email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   // Verificar que el email tenga un formato válido y contenga arroba si se actualiza
-  if (email && typeof email === 'string') {
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@) y un dominio válido.' });
-    }
-  } else if (email !== undefined) {
-    return res.status(400).json({ message: 'El email debe ser un string.' });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Email no es válido. Debe contener una arroba (@) y un dominio válido.' });
   }
 
   // Actualizar los campos del usuario
@@ -90,8 +85,8 @@ router.put('/:id', (req, res) => {
   res.json(user);
 });
 
-// Eliminar un usuario por ID
-router.delete('/:id', (req, res) => {
+// Eliminar un usuario por ID 
+router.delete('/:id', authToken, (req, res) => {
   const index = users.findIndex(u => u.id === req.params.id);
   if (index === -1) return res.status(404).json({ message: 'Usuario no encontrado' });
 
