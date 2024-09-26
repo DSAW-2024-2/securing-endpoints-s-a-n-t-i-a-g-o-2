@@ -53,4 +53,5 @@ function authToken(req, res, next) {
 
 // Exporta el router y el middleware de autenticación
 module.exports = router;
-module.exports = authToken;
+module.exports.authToken = authToken;
+
